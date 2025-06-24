@@ -121,18 +121,15 @@ export default function DetailPage({ itemId, itemType, onBack, onDelete, onSave 
         </button>
       </div>
 
+      {/* 여기서부터 감싸줌 */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* 헤더 */}
-        <div className="bg-blue-600 text-white px-6 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold">{itemType} 상세보기</h1>
-            <button
-              onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            >
-              글 삭제
-            </button>
-          </div>
+        <div className="flex justify-end items-center pr-6 pt-4">
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors text-white">
+            글 삭제
+          </button>
         </div>
 
         {/* 내용 */}
