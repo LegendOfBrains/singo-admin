@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
-import './SchoolLifeReports.css'; // CSS 파일 불러오기
 
 export default function SchoolLifeReports({ onItemClick }) {
-  // 상태 관리 - 데이터를 저장하는 곳
-  const [searchTerm, setSearchTerm] = useState(''); // 검색어 입력값
-  const [reports, setReports] = useState([]); // 신고 목록 데이터
+  // 검색창에 입력한 값을 저장하는 상태
+  const [searchTerm, setSearchTerm] = useState('');
+  // 신고 목록을 저장하는 상태
+  const [reports, setReports] = useState([]);
 
-  // 컴포넌트가 처음 렌더링될 때 실행되는 함수
+  // 컴포넌트가 처음 화면에 나타날 때 실행됨
   useEffect(() => {
-    // 실제로는 서버에서 데이터를 가져오지만, 지금은 가짜 데이터 사용
+    // 가짜 데이터 사용
     const mockData = [
       {
         id: 1,
@@ -47,101 +47,109 @@ export default function SchoolLifeReports({ onItemClick }) {
         status: '처리 완료'
       }
     ];
-    setReports(mockData); // 가짜 데이터를 reports 상태에 저장
-  }, []); // 빈 배열이므로 컴포넌트가 처음 렌더링될 때만 실행
+    setReports(mockData); // 위의 가짜 데이터를 상태에 저장
+  }, []);
 
-  // 상태에 따른 색상 결정 함수
+  // 신고 상태(접수 중/처리 예정/처리 완료)에 따라 색깔을 다르게 보여주는 함수
   const getStatusColor = (status) => {
     switch (status) {
       case '접수 중':
-        return 'status-received'; // 접수 중 상태 CSS 클래스
+        return 'bg-yellow-100 text-yellow-800'; // 접수 중은 노란색
       case '처리 예정':
-        return 'status-scheduled'; // 처리 예정 상태 CSS 클래스
+        return 'bg-blue-100 text-blue-800'; // 처리 예정은 파란색
       case '처리 완료':
-        return 'status-completed'; // 처리 완료 상태 CSS 클래스
+        return 'bg-green-100 text-green-800'; // 처리 완료는 초록색
       default:
-        return 'status-default'; // 기본 상태 CSS 클래스
+        return 'bg-gray-100 text-gray-800'; // 그 외는 회색
     }
   };
 
-  // 검색 기능 - 신고 내용이나 신고자 이름으로 필터링
+  // 검색어에 따라 신고 목록을 필터링(검색)함
   const filteredReports = reports.filter(report =>
-    report.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.reporter.toLowerCase().includes(searchTerm.toLowerCase())
+    report.content.toLowerCase().includes(searchTerm.toLowerCase()) || // 신고 내용에 검색어가 포함되면
+    report.reporter.toLowerCase().includes(searchTerm.toLowerCase())   // 신고자 이름에 검색어가 포함되면
   );
 
   return (
-    <div className="school-life-reports-container">
-      {/* 상단 헤더 부분 - 제목과 검색창 */}
-      <div className="reports-header">
-        <h1 className="page-title">학교생활 신고</h1>
-        <div className="search-container">
-          <Search className="search-icon" />
+    <>
+      {/* 상단: 제목과 검색창 */}
+      <div className="flex justify-between items-center mb-8">
+        {/* 큰 제목 */}
+        <h1 className="text-3xl font-bold text-gray-900">학교생활 신고</h1>
+        {/* 검색창 */}
+        <div className="relative">
+          {/* 돋보기 아이콘 */}
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          {/* 검색 입력창 */}
           <input
             type="text"
             placeholder="검색어를 입력해 주세요"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            onChange={(e) => setSearchTerm(e.target.value)} // 입력값이 바뀔 때마다 상태 변경
+            className="pl-10 pr-4 py-2 w-80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
 
-      {/* 신고 목록 테이블 */}
-      <div className="reports-table">
-        {/* 테이블 헤더 */}
-        <div className="table-header">
-          <div className="header-row">
-            <div className="header-content">신고 내용</div>
-            <div className="header-reporter">신고자</div>
-            <div className="header-date">신고일</div>
-            <div className="header-status">현황</div>
+      {/* 신고 목록 테이블(표) */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        {/* 테이블 헤더(제목 줄) */}
+        <div className="bg-blue-600 text-white">
+          <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-medium">
+            <div className="col-span-6">신고 내용</div>
+            <div className="col-span-2">신고자</div>
+            <div className="col-span-2">신고일</div>
+            <div className="col-span-2">현황</div>
           </div>
         </div>
 
-        {/* 테이블 본문 */}
-        <div className="table-body">
+        {/* 신고 목록 */}
+        <div className="divide-y divide-gray-200">
           {filteredReports.length > 0 ? (
-            // 검색 결과가 있을 때 - 각 신고를 행으로 표시
+            // 신고가 있을 때
             filteredReports.map((report) => (
               <div
                 key={report.id}
-                className="table-row"
-                onClick={() => onItemClick && onItemClick(report.id)}
+                className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => onItemClick && onItemClick(report.id)} // 클릭하면 상세보기로 이동
               >
-                <div className="row-content">
-                  <p className="content-text" title={report.content}>
+                {/* 신고 내용 */}
+                <div className="col-span-6">
+                  <p className="text-gray-900 truncate" title={report.content}>
                     {report.content}
                   </p>
                 </div>
-                <div className="row-reporter">
-                  <p className="reporter-text">{report.reporter}</p>
+                {/* 신고자 이름 */}
+                <div className="col-span-2">
+                  <p className="text-gray-900">{report.reporter}</p>
                 </div>
-                <div className="row-date">
-                  <p className="date-text">{report.date}</p>
+                {/* 신고 날짜 */}
+                <div className="col-span-2">
+                  <p className="text-gray-600">{report.date}</p>
                 </div>
-                <div className="row-status">
-                  <span className={`status-badge ${getStatusColor(report.status)}`}>
+                {/* 신고 상태 */}
+                <div className="col-span-2">
+                  <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(report.status)}`}>
                     {report.status}
                   </span>
                 </div>
               </div>
             ))
           ) : (
-            // 검색 결과가 없을 때
-            <div className="no-results">
-              <p className="no-results-text">검색 결과가 없습니다.</p>
+            // 신고가 없을 때(검색 결과 없음)
+            <div className="px-6 py-12 text-center">
+              <p className="text-gray-500">검색 결과가 없습니다.</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* 하단 정보 - 총 신고 개수 */}
-      <div className="reports-footer">
-        <div className="total-count">
+      {/* 하단: 신고 개수 표시 */}
+      <div className="mt-6 flex justify-center">
+        <div className="text-sm text-gray-500">
           총 {filteredReports.length}개의 신고가 있습니다.
         </div>
       </div>
-    </div>
+    </>
   );
 }

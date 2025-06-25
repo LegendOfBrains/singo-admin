@@ -4,42 +4,41 @@ import FacilityReports from './FacilityReports';
 import SchoolLifeReports from './SchoolLifeReports';
 import Inquiries from './Inquiries';
 import DetailPage from '../detailPage/DetailPage';
-import './Dashboard.css'; // CSS 파일 불러오기
 
 export default function Dashboard({ user, onLogout }) {
-  // 상태 관리
-  const [selectedTab, setSelectedTab] = useState('시설 신고'); // 현재 선택된 탭
-  const [currentView, setCurrentView] = useState('list'); // 현재 화면 ('list' 또는 'detail')
-  const [selectedItem, setSelectedItem] = useState(null); // 선택된 항목 정보
+  // 현재 선택된 탭(시설 신고, 학교생활 신고, 문의사항)
+  const [selectedTab, setSelectedTab] = useState('시설 신고');
+  // 현재 화면이 리스트인지 상세보기인지 상태 저장
+  const [currentView, setCurrentView] = useState('list'); // 'list' 또는 'detail'
+  // 상세보기에서 선택된 아이템 정보 저장
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  // 아이템 클릭 시 상세 페이지로 이동하는 함수
+  // 리스트에서 아이템 클릭 시 상세보기로 전환
   const handleItemClick = (itemId, itemType) => {
     setSelectedItem({ id: itemId, type: itemType });
     setCurrentView('detail');
   };
 
-  // 목록으로 돌아가는 함수
+  // 상세보기에서 뒤로가기 버튼 클릭 시 리스트로 전환
   const handleBackToList = () => {
     setCurrentView('list');
     setSelectedItem(null);
   };
 
-  // 아이템 삭제 처리 함수
+  // 삭제 버튼 클릭 시 실행 (실제로는 API 호출해야 함)
   const handleDelete = (itemId) => {
-    // 실제로는 API 호출
     console.log('삭제:', itemId);
     handleBackToList();
   };
 
-  // 아이템 저장 처리 함수
+  // 저장 버튼 클릭 시 실행 (실제로는 API 호출해야 함)
   const handleSave = (itemId, status) => {
-    // 실제로는 API 호출
     console.log('저장:', itemId, status);
   };
 
-  // 현재 상태에 따라 적절한 컨텐츠를 렌더링하는 함수
+  // 현재 탭과 화면 상태에 따라 보여줄 컴포넌트 결정
   const renderContent = () => {
-    // 상세 페이지 표시
+    // 상세보기 화면일 때
     if (currentView === 'detail' && selectedItem) {
       return (
         <DetailPage
@@ -52,7 +51,7 @@ export default function Dashboard({ user, onLogout }) {
       );
     }
 
-    // 선택된 탭에 따라 해당 컴포넌트 표시
+    // 리스트 화면일 때, 선택된 탭에 따라 컴포넌트 보여줌
     switch (selectedTab) {
       case '시설 신고':
         return <FacilityReports onItemClick={(id) => handleItemClick(id, '시설 신고')} />;
@@ -65,23 +64,27 @@ export default function Dashboard({ user, onLogout }) {
     }
   };
 
+  // 실제로 화면에 보여지는 부분
   return (
-    <div className="dashboard-container">
-      {/* 헤더 컴포넌트 */}
+    <div className="min-h-screen bg-gray-50">
+      {/* 상단 헤더 (로그인한 사용자 이름, 로그아웃 버튼) */}
       <Header userName={user.name} onLogout={onLogout} />
       
       {/* 메인 컨텐츠 영역 */}
-      <div className="dashboard-content">
-        {/* 탭 네비게이션 (목록 화면에서만 표시) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 리스트 화면일 때만 탭 메뉴 보여줌 */}
         {currentView === 'list' && (
-          <div className="tab-navigation-container">
-            <nav className="tab-navigation">
+          <div className="mb-8">
+            <nav className="flex space-x-8">
+              {/* 탭 버튼들 */}
               {['시설 신고', '학교생활 신고', '문의사항'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setSelectedTab(tab)}
-                  className={`tab-button ${
-                    selectedTab === tab ? 'tab-button-active' : 'tab-button-inactive'
+                  className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    selectedTab === tab
+                      ? 'border-blue-600 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
                   {tab}
@@ -91,7 +94,7 @@ export default function Dashboard({ user, onLogout }) {
           </div>
         )}
 
-        {/* 동적 컨텐츠 렌더링 */}
+        {/* 탭/상세보기 내용 */}
         {renderContent()}
       </div>
     </div>

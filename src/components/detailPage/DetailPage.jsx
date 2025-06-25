@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
-import './DetailPage.css'; // CSS 파일 불러오기
 
 export default function DetailPage({ itemId, itemType, onBack, onDelete, onSave }) {
-  // 상태 관리
-  const [item, setItem] = useState(null); // 선택된 항목 데이터
-  const [currentStatus, setCurrentStatus] = useState(''); // 현재 상태
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 열림/닫힘 상태
+  // 현재 보고 있는 아이템(신고/문의) 정보 상태
+  const [item, setItem] = useState(null);
+  // 현재 상태(예: 접수 중, 처리 완료 등)
+  const [currentStatus, setCurrentStatus] = useState('');
+  // 드롭다운(상태 변경 메뉴) 열림/닫힘 상태
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // 항목 타입에 따른 상태 옵션 반환
+  // 아이템 종류에 따라 상태 옵션(예: 문의는 답변 완료/안함, 신고는 접수 중/처리 예정/완료)
   const getStatusOptions = () => {
     if (itemType === '문의사항') {
       return ['답변 완료', '답변 안함'];
@@ -16,7 +17,7 @@ export default function DetailPage({ itemId, itemType, onBack, onDelete, onSave 
     return ['접수 중', '처리 예정', '처리 완료'];
   };
 
-  // 항목 타입에 따른 필드 라벨 반환
+  // 아이템 종류에 따라 필드 라벨(문의자/신고자 등) 다르게 표시
   const getFieldLabels = () => {
     if (itemType === '문의사항') {
       return {
@@ -32,9 +33,9 @@ export default function DetailPage({ itemId, itemType, onBack, onDelete, onSave 
     };
   };
 
-  // 컴포넌트가 처음 렌더링되거나 itemId가 변경될 때 실행
+  // 컴포넌트가 처음 렌더링될 때 mock 데이터로 아이템 정보 불러오기
   useEffect(() => {
-    // 실제로는 서버에서 데이터를 가져오지만, 지금은 가짜 데이터 사용
+    // 실제 서버 대신 임시 데이터 사용
     const mockData = {
       1: {
         id: 1,
@@ -52,151 +53,152 @@ export default function DetailPage({ itemId, itemType, onBack, onDelete, onSave 
       }
     };
 
-    // 해당 ID의 데이터가 있으면 상태에 저장
+    // 해당 id의 데이터가 있으면 상태에 저장
     if (mockData[itemId]) {
       setItem(mockData[itemId]);
       setCurrentStatus(mockData[itemId].status);
     }
-  }, [itemId]); // itemId가 변경될 때마다 실행
+  }, [itemId]);
 
-  // 상태 변경 처리 함수
+  // 상태 변경 드롭다운에서 선택 시 실행
   const handleStatusChange = (newStatus) => {
     setCurrentStatus(newStatus);
-    setIsDropdownOpen(false); // 드롭다운 닫기
+    setIsDropdownOpen(false);
   };
 
-  // 저장 버튼 클릭 처리
+  // 저장 버튼 클릭 시 실행
   const handleSave = () => {
     if (onSave) {
-      onSave(itemId, currentStatus);
+      onSave(itemId, currentStatus); // 부모 컴포넌트에 저장 알림
     }
     alert('저장되었습니다.');
   };
 
-  // 삭제 버튼 클릭 처리
+  // 삭제 버튼 클릭 시 실행
   const handleDelete = () => {
     if (confirm('정말로 삭제하시겠습니까?')) {
       if (onDelete) {
-        onDelete(itemId);
+        onDelete(itemId); // 부모 컴포넌트에 삭제 알림
       }
     }
   };
 
-  // 상태에 따른 색상 클래스 반환 함수
+  // 상태에 따라 색깔 다르게 반환
   const getStatusColor = (status) => {
     if (itemType === '문의사항') {
       switch (status) {
         case '답변 완료':
-          return 'status-completed';
+          return 'bg-green-100 text-green-800';
         case '답변 안함':
-          return 'status-not-answered';
+          return 'bg-red-100 text-red-800';
         default:
-          return 'status-default';
+          return 'bg-gray-100 text-gray-800';
       }
     }
 
     switch (status) {
       case '접수 중':
-        return 'status-received';
+        return 'bg-yellow-100 text-yellow-800';
       case '처리 예정':
-        return 'status-scheduled';
+        return 'bg-blue-100 text-blue-800';
       case '처리 완료':
-        return 'status-completed';
+        return 'bg-green-100 text-green-800';
       default:
-        return 'status-default';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  // 데이터가 로딩 중일 때 표시
+  // 아이템 정보가 아직 없으면 로딩 표시
   if (!item) {
     return (
-      <div className="loading-container">
-        <p className="loading-text">로딩 중...</p>
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">로딩 중...</p>
       </div>
     );
   }
 
+  // 라벨, 상태 옵션, 제목/본문 분리
   const labels = getFieldLabels();
   const statusOptions = getStatusOptions();
   const [title, ...bodyLines] = item.content.split('\n');
 
   return (
-    <div className="detail-page-container">
+    <div className="max-w-4xl mx-auto">
       {/* 뒤로가기 버튼 */}
-      <div className="back-button-container">
+      <div className="mb-6">
         <button
           onClick={onBack}
-          className="back-button"
+          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
         >
-          <ArrowLeft className="back-icon" />
+          <ArrowLeft className="w-5 h-5" />
           <span>목록으로 돌아가기</span>
         </button>
       </div>
 
-      {/* 메인 컨텐츠 카드 */}
-      <div className="detail-card">
-        {/* 헤더 - 삭제 버튼 */}
-        <div className="card-header">
+      {/* 상세보기 카드 전체 */}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* 오른쪽 상단: 삭제 버튼 */}
+        <div className="flex justify-end items-center pr-6 pt-4">
           <button
             onClick={handleDelete}
-            className="delete-button"
-          >
+            className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors text-white">
             글 삭제
           </button>
         </div>
 
-        {/* 내용 영역 */}
-        <div className="card-content">
-          <div className="content-grid">
+        {/* 상세 내용 영역 */}
+        <div className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* 왼쪽: 상세 내용 */}
-            <div className="content-left">
-              <div className="content-details">
+            <div className="lg:col-span-2">
+              <div className="space-y-4">
                 {/* 제목 + 작성자/날짜 */}
-                <div className="title-section">
-                  <h2 className="item-title">{title}</h2>
-                  <p className="item-meta">{item.reporter} | {item.date}</p>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+                  <p className="text-sm text-gray-500">{item.reporter} | {item.date}</p>
                 </div>
 
-                {/* 본문 내용 */}
-                <div className="item-body">
+                {/* 본문 내용(여러 줄) */}
+                <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed border-t pt-4">
                   {bodyLines.join('\n')}
                 </div>
               </div>
             </div>
 
-            {/* 오른쪽: 현황 관리 */}
-            <div className="content-right">
-              <div className="status-panel">
-                <h3 className="status-title">
+            {/* 오른쪽: 현황 관리(상태 변경, 저장) */}
+            <div className="lg:col-span-1">
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   현황 관리
                 </h3>
 
-                <div className="status-controls">
-                  <div className="status-field">
-                    <label className="status-label">
+                <div className="space-y-4">
+                  {/* 상태 변경 드롭다운 */}
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-2">
                       현재 상태
                     </label>
-                    <div className="dropdown-container">
+                    <div className="relative">
                       <button
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="dropdown-button"
+                        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        <span className={`status-badge ${getStatusColor(currentStatus)}`}>
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(currentStatus)}`}>
                           {currentStatus}
                         </span>
-                        <ChevronDown className={`dropdown-icon ${isDropdownOpen ? 'dropdown-icon-open' : ''}`} />
+                        <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                       </button>
 
                       {/* 드롭다운 메뉴 */}
                       {isDropdownOpen && (
-                        <div className="dropdown-menu">
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                           {statusOptions.map((status) => (
                             <button
                               key={status}
                               onClick={() => handleStatusChange(status)}
-                              className="dropdown-item"
+                              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
                             >
-                              <span className={`status-badge ${getStatusColor(status)}`}>
+                              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
                                 {status}
                               </span>
                             </button>
@@ -207,10 +209,10 @@ export default function DetailPage({ itemId, itemType, onBack, onDelete, onSave 
                   </div>
 
                   {/* 저장 버튼 */}
-                  <div className="save-button-container">
+                  <div className="pt-4">
                     <button
                       onClick={handleSave}
-                      className="save-button"
+                      className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors"
                     >
                       저장
                     </button>
