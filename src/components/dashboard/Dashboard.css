@@ -1,0 +1,157 @@
+/* 대시보드 전체 컨테이너 */
+.dashboard-container {
+  min-height: 100vh; /* 최소 높이를 화면 전체 높이로 설정 */
+  background-color: #f9fafb; /* 연한 회색 배경 */
+}
+
+/* 메인 컨텐츠 영역 */
+.dashboard-content {
+  max-width: 1280px; /* 최대 너비 */
+  margin: 0 auto; /* 가운데 정렬 */
+  padding: 32px 16px; /* 상하 32px, 좌우 16px 여백 */
+}
+
+/* 중간 화면 이상에서 좌우 여백 조정 */
+@media (min-width: 640px) {
+  .dashboard-content {
+    padding-left: 24px; /* 좌측 여백 증가 */
+    padding-right: 24px; /* 우측 여백 증가 */
+  }
+}
+
+/* 큰 화면에서 좌우 여백 조정 */
+@media (min-width: 1024px) {
+  .dashboard-content {
+    padding-left: 32px; /* 좌측 여백 증가 */
+    padding-right: 32px; /* 우측 여백 증가 */
+  }
+}
+
+/* 탭 네비게이션 컨테이너 */
+.tab-navigation-container {
+  margin-bottom: 32px; /* 아래쪽 여백 */
+}
+
+/* 탭 네비게이션 */
+.tab-navigation {
+  display: flex; /* 플렉스 레이아웃 */
+  gap: 32px; /* 탭 간격 */
+  border-bottom: 1px solid #e5e7eb; /* 하단 테두리 */
+}
+
+/* 탭 버튼 공통 스타일 */
+.tab-button {
+  padding: 16px 4px 16px 4px; /* 상하 16px, 좌우 4px 여백 */
+  border: none; /* 테두리 없음 */
+  background: none; /* 배경 없음 */
+  cursor: pointer; /* 마우스 커서 손가락 모양 */
+  font-weight: 500; /* 글자 굵기 */
+  font-size: 14px; /* 글자 크기 */
+  transition: all 0.2s ease; /* 부드러운 변화 효과 */
+  border-bottom: 2px solid transparent; /* 투명한 하단 테두리 */
+  position: relative; /* 상대 위치 */
+}
+
+/* 활성화된 탭 버튼 */
+.tab-button-active {
+  border-bottom-color: #2563eb; /* 파란색 하단 테두리 */
+  color: #2563eb; /* 파란색 글자 */
+}
+
+/* 비활성화된 탭 버튼 */
+.tab-button-inactive {
+  color: #6b7280; /* 회색 글자 */
+}
+
+/* 비활성화된 탭 버튼 호버 효과 */
+.tab-button-inactive:hover {
+  color: #374151; /* 어두운 회색 글자 */
+  border-bottom-color: #d1d5db; /* 연한 회색 하단 테두리 */
+}
+
+/* 탭 버튼 포커스 효과 */
+.tab-button:focus {
+  outline: none; /* 기본 아웃라인 제거 */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1); /* 파란색 포커스 그림자 */
+  border-radius: 4px; /* 둥근 모서리 */
+}
+
+/* 작은 화면에서 탭 네비게이션 조정 */
+@media (max-width: 640px) {
+  .tab-navigation {
+    gap: 16px; /* 탭 간격 줄임 */
+    overflow-x: auto; /* 가로 스크롤 허용 */
+    -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 */
+  }
+  
+  .tab-button {
+    white-space: nowrap; /* 줄 바꿈 방지 */
+    min-width: fit-content; /* 최소 너비 */
+    padding: 12px 8px; /* 여백 조정 */
+    font-size: 13px; /* 글자 크기 줄임 */
+  }
+}
+
+/* 아주 작은 화면에서 추가 조정 */
+@media (max-width: 480px) {
+  .dashboard-content {
+    padding: 16px 12px; /* 여백 줄임 */
+  }
+  
+  .tab-navigation-container {
+    margin-bottom: 24px; /* 아래쪽 여백 줄임 */
+  }
+  
+  .tab-navigation {
+    gap: 12px; /* 탭 간격 더 줄임 */
+  }
+  
+  .tab-button {
+    padding: 10px 6px; /* 여백 더 줄임 */
+    font-size: 12px; /* 글자 크기 더 줄임 */
+  }
+}
+
+/* 접근성 향상을 위한 키보드 네비게이션 */
+.tab-button:focus-visible {
+  outline: 2px solid #2563eb; /* 파란색 아웃라인 */
+  outline-offset: 2px; /* 아웃라인 간격 */
+}
+
+/* 다크 모드 지원 (선택사항) */
+@media (prefers-color-scheme: dark) {
+  .dashboard-container {
+    background-color: #111827; /* 어두운 배경 */
+  }
+  
+  .tab-navigation {
+    border-bottom-color: #374151; /* 어두운 테두리 */
+  }
+  
+  .tab-button-inactive {
+    color: #9ca3af; /* 어두운 모드 회색 글자 */
+  }
+  
+  .tab-button-inactive:hover {
+    color: #d1d5db; /* 어두운 모드 호버 글자 */
+    border-bottom-color: #4b5563; /* 어두운 모드 호버 테두리 */
+  }
+}
+
+/* 애니메이션 감소 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .tab-button {
+    transition: none; /* 애니메이션 제거 */
+  }
+}
+
+/* 높은 대비 모드 지원 */
+@media (prefers-contrast: high) {
+  .tab-button-active {
+    border-bottom-width: 3px; /* 테두리 두께 증가 */
+  }
+  
+  .tab-button:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3); /* 더 진한 포커스 그림자 */
+  }
+}

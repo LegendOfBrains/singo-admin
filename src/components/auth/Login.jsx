@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
+import './Login.css'; // CSS 파일 import
 import Logo from '../assets/logo.png'; // 로고 이미지 경로
 
 export default function Login({ onLoginSuccess }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  // 상태 관리 (데이터 저장)
+  const [email, setEmail] = useState(''); // 이메일 입력값
+  const [password, setPassword] = useState(''); // 비밀번호 입력값
+  const [emailError, setEmailError] = useState(''); // 이메일 에러 메시지
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
 
+  // 이메일 형식 검증 함수
   const validateEmail = (email) => {
+    // DGSW 이메일 형식인지 확인
     if (!email.endsWith('@dgsw.hs.kr')) {
       return 'DGSW 이메일(@dgsw.hs.kr)만 사용 가능합니다.';
     }
-    return '';
+    return ''; // 에러 없음
   };
 
+  // 이메일 입력값 변경 처리
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
     
+    // 이메일이 입력되었을 때만 검증
     if (newEmail.trim()) {
       const error = validateEmail(newEmail);
       setEmailError(error);
@@ -26,9 +32,11 @@ export default function Login({ onLoginSuccess }) {
     }
   };
 
+  // 로그인 버튼 클릭 처리
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // 페이지 새로고침 방지
     
+    // 이메일 검증
     const emailValidationError = validateEmail(email);
     
     if (emailValidationError) {
@@ -36,24 +44,24 @@ export default function Login({ onLoginSuccess }) {
       return;
     }
 
-    setIsLoading(true);
+    setIsLoading(true); // 로딩 시작
     
-    // 실제 로그인 API 호출 시뮬레이션
+    // 실제 로그인 API 호출 시뮬레이션 (1초 대기)
     setTimeout(() => {
       console.log('Login attempt:', { email, password });
       
-      // 여기서 실제 로그인 검증을 하고
-      // 성공 시 사용자 정보와 함께 onLoginSuccess 호출
+      // 로그인 성공 시 사용자 정보 생성
       const userData = {
         name: email.split('@')[0] + ' 선생님',
         email: email
       };
       
-      setIsLoading(false);
-      onLoginSuccess(userData);
+      setIsLoading(false); // 로딩 끝
+      onLoginSuccess(userData); // 부모 컴포넌트에 로그인 성공 알림
     }, 1000);
   };
 
+  // 엔터키 입력 처리
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSubmit(e);
@@ -61,21 +69,24 @@ export default function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="mb-4">
+    <div className="login-container">
+      <div className="login-card">
+        {/* 로고 영역 */}
+        <div className="logo-section">
+          <div className="logo-wrapper">
             <img 
               src={Logo}
               alt="신GO! 로고"
-              className="mx-auto h-25 w-40 rounded-xl"
+              className="logo-image"
             />
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm text-gray-600 mb-2">
+        {/* 입력 폼 영역 */}
+        <div className="form-section">
+          {/* 이메일 입력 */}
+          <div className="input-group">
+            <label className="input-label">
               Email
             </label>
             <input
@@ -83,19 +94,19 @@ export default function Login({ onLoginSuccess }) {
               value={email}
               onChange={handleEmailChange}
               onKeyPress={handleKeyPress}
-              className={`w-full px-4 py-3 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 ${
-                emailError ? 'focus:ring-red-500 ring-2 ring-red-500' : 'focus:ring-blue-500'
-              }`}
+              className={`input-field ${emailError ? 'input-error' : ''}`}
               placeholder="발급 받은 이메일을 입력해주세요."
               disabled={isLoading}
             />
+            {/* 에러 메시지 표시 */}
             {emailError && (
-              <p className="mt-2 text-sm text-red-600">{emailError}</p>
+              <p className="error-message">{emailError}</p>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm text-gray-600 mb-2">
+          {/* 비밀번호 입력 */}
+          <div className="input-group">
+            <label className="input-label">
               Password
             </label>
             <input
@@ -103,15 +114,20 @@ export default function Login({ onLoginSuccess }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-field"
               placeholder="비밀번호를 입력해주세요."
               disabled={isLoading}
             />
           </div>
 
+          {/* 로그인 버튼 */}
           <button
             onClick={handleSubmit}
-            className="w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className={`login-button ${
+              (!!emailError || isLoading || !email || !password) 
+                ? 'login-button-disabled' 
+                : ''
+            }`}
             disabled={!!emailError || isLoading || !email || !password}
           >
             {isLoading ? '로그인 중...' : '로그인'}

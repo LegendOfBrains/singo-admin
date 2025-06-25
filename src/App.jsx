@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import Login from './components/auth/Login';
+import Dashboard from './components/dashboard/Dashboard';
 
 export default function App() {
   const [user, setUser] = useState(null);
